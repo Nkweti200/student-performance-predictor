@@ -34,8 +34,20 @@ class _PredictorPageState extends State<PredictorPage> {
     final url =
         Uri.parse('http://127.0.0.1:8000/api/predict/'); // Django API URL
 
+    // Ensure inputs are valid and not empty
+    if (g1Controller.text.isEmpty ||
+        g2Controller.text.isEmpty ||
+        studytimeController.text.isEmpty ||
+        absencesController.text.isEmpty ||
+        avgGradeController.text.isEmpty) {
+      setState(() {
+        prediction = 'Error: Please fill all fields';
+      });
+      return;
+    }
+
     try {
-      // Prepare input data
+      // Prepare input data in correct order and format
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -52,7 +64,7 @@ class _PredictorPageState extends State<PredictorPage> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
-          prediction = 'Predicted Grade: ${data['prediction']}';
+          prediction = 'Predicted Performance: ${data['prediction']}';
         });
       } else {
         setState(() {
